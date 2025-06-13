@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pay with Paystack</title>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+  <h2>Total: Ksh <span id="total">2500</span></h2>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <button onclick="payWithPaystack()">Pay Now</button>
+
+  <script>
+    function payWithPaystack() {
+      const handler = PaystackPop.setup({
+        key: 'pk_live_xxxxxxxxxxxxxxxxxxxxx', // Replace with your live public key
+        email: document.getElementById('email').value,
+        amount: 2500 * 100, // ksh * 100 (in kobo/centi-units)
+        currency: 'KES', // Or NGN, GHS, ZAR, depending on your setup
+        ref: 'ALPHA-' + Math.floor(Math.random() * 1000000000),
+
+        callback: function(response) {
+          // Hit your backend for verification
+          fetch("/verify/" + response.reference)
+            .then(res => res.json())
+            .then(data => alert("Payment " + data.status));
+        },
+
+        onClose: function() {
+          alert('Transaction was not completed, window closed.');
+        },
+      });
+
+      handler.openIframe();
+    }
+  </script>
+</body>
+</html>
