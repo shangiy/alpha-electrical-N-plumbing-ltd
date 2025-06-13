@@ -9,10 +9,10 @@
   <input type="text" id="mpesaPhone" placeholder="Enter your (mpesa)Phone no." required />
   <button onclick="payWithPaystack()">Pay Now</button>
 
-  <script>
+ <script>
     function payWithPaystack() {
       const handler = PaystackPop.setup({
-        key: 'pk_live_xxxxxxxxxxxxxxxxxxxxx', // Replace with your live public key
+        key: 'pk_test_163014ec364903a72c78b8e3fea9db7e080333ce', // Replace with your live public key
         email: document.getElementById('email').value,
         amount: 2500 * 100, // ksh * 100 (in kobo/centi-units)
         currency: 'KES', // Or NGN, GHS, ZAR, depending on your setup
