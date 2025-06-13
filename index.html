@@ -141,7 +141,15 @@ position: relative;
      <div class="cart-footer">
       <strong>Total Amount: Ksh <span id="cart-total">0</span></strong>
      </div>
+     <div style="background-color: rgb(8, 17, 139); width: 100%; padding: 10px;">
+      <button id="proceedToCheckout" style="width: 100%; padding: 12px; font-size: 16px; color: white; background-color: #049b31; border: none; border-radius: 5px;">
+      Proceed to Checkout
+      </button>
+     </div>
 
+     <div class="cart-empty" id="cart-empty" style="display: none;">
+       <p>Your cart is empty.</p>
+     </div>
     </div>
   </header>
 
@@ -680,6 +688,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("checkoutOverlay").style.display = "none";
       location.reload(); // Reload to update cart
     }
+  });
+</script>
+<script>
+  document.getElementById("proceedToCheckout").addEventListener("click", () => {
+    const amount = document.getElementById("cart-total").textContent.trim();
+    const cleanAmount = amount.replace(/[^\d]/g, ''); // Remove Ksh or commas if any
+    localStorage.setItem("checkoutAmount", cleanAmount);
+    window.location.href = "checkout.html"; // or open overlay
   });
 </script>
 
