@@ -1,37 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Pay with Paystack</title>
+  <meta charset="UTF-8">
+  <title>Pay with M-PESA (via Paystack)</title>
   <script src="https://js.paystack.co/v1/inline.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #2c3e50;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #00b894;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #019170;
+    }
+  </style>
 </head>
 <body>
-  <h2>Total: Ksh <span id="total">2500</span></h2>
-  <input type="text" id="mpesaPhone" placeholder="Enter your (mpesa)Phone no." required />
-  <button onclick="payWithPaystack()">Pay Now</button>
 
- <script>
+  <h2>Total: Ksh <span id="totalAmount">2500</span></h2>
+
+  <input type="tel" id="phone" placeholder="Enter your M-PESA phone number" required />
+  <br />
+  <button onclick="payWithPaystack()">Pay with M-PESA</button>
+
+  <script>
     function payWithPaystack() {
+      const phone = document.getElementById("phone").value;
+      const amountKsh = parseInt(document.getElementById("totalAmount").textContent);
+      
+      if (!phone || phone.length < 10) {
+        alert("Please enter a valid M-PESA number.");
+        return;
+      }
+
       const handler = PaystackPop.setup({
-        key: 'pk_test_163014ec364903a72c78b8e3fea9db7e080333ce', // Replace with your live public key
-        email: document.getElementById('email').value,
-        amount: 2500 * 100, // ksh * 100 (in kobo/centi-units)
-        currency: 'KES', // Or NGN, GHS, ZAR, depending on your setup
+        key: 'pk_test_163014ec364903a72c78b8e3fea9db7e080333ce', // ✅ Replace with your public key
+        phone: phone,
+        email: `${phone}@alpha.co.ke`, // Fake email required by Paystack
+        amount: amountKsh * 100, // Amount in cents
+        currency: 'KES',
         ref: 'ALPHA-' + Math.floor(Math.random() * 1000000000),
+        channels: ['mobile_money'], // Forces M-PESA
 
         callback: function(response) {
-          // Hit your backend for verification
-          fetch("/verify/" + response.reference)
-            .then(res => res.json())
-            .then(data => alert("Payment " + data.status));
+          alert('Payment initiated. Reference: ' + response.reference);
+          // You can verify on server-side here
         },
 
         onClose: function() {
-          alert('Transaction was not completed, window closed.');
-        },
+          alert('Payment window closed.');
+        }
       });
 
       handler.openIframe();
     }
   </script>
+
 </body>
 </html>
