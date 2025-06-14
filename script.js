@@ -367,3 +367,4 @@ document.getElementById("proceedToCheckout").addEventListener("click", () => {
   // On scroll
   window.addEventListener("scroll", animateCircles);
 });
+
