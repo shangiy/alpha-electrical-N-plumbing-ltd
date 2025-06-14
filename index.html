@@ -683,21 +683,15 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 <script>
-  window.addEventListener("message", function (event) {
-    if (event.data === "closeCheckout") {
-      document.getElementById("checkoutOverlay").style.display = "none";
-      location.reload(); // Reload to update cart
-    }
-  });
-</script>
-<script>
   document.getElementById("proceedToCheckout").addEventListener("click", () => {
-    const amount = document.getElementById("cart-total").textContent.trim();
-    const cleanAmount = amount.replace(/[^\d]/g, ''); // Remove Ksh or commas if any
+    const totalText = document.getElementById("cart-total").textContent.trim(); // e.g. "62,650.00"
+    const cleanAmount = totalText.replace(/,/g, ""); // → "62650.00"
     localStorage.setItem("checkoutAmount", cleanAmount);
-    window.location.href = "checkout.html"; // or open overlay
+    window.location.href = "checkout.html"; // OR show iframe if using modal
   });
 </script>
+
+
 
 
 <script src="script.js" defer></script>
