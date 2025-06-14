@@ -120,20 +120,6 @@ function updateCartUI() {
     });
   });
   cartTotal.textContent = total.toFixed(2);
-  // Add or update checkout button
-let checkoutBtn = document.getElementById("checkoutBtn");
-if (!checkoutBtn) {
-  checkoutBtn = document.createElement("button");
-  checkoutBtn.id = "checkoutBtn";
-  checkoutBtn.textContent = "Proceed to Checkout";
-  checkoutBtn.classList.add("checkout-btn"); // Add your CSS class if needed
-  cartPanel.appendChild(checkoutBtn);
-}
-checkoutBtn.onclick = () => {
-  window.location.href = "checkout.html";
-};
-
-// Open checkout overlay
 
 
 // Close overlay
