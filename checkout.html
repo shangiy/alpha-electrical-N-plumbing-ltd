@@ -11,6 +11,7 @@
       padding: 2rem;
       background: #f4f4f4;
     }
+
     .checkout-box {
       max-width: 400px;
       margin: auto;
@@ -19,9 +20,13 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2 {
+
+    h2.section-title {
       text-align: center;
+      color: #007BFF; /* Alpha site blue */
+      margin-bottom: 1rem;
     }
+
     input[type="text"] {
       width: 100%;
       padding: 12px;
@@ -29,6 +34,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+
     button {
       width: 100%;
       padding: 12px;
@@ -39,70 +45,107 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: darkgreen;
+    }
+
+    ol.cart-list {
+      padding-left: 20px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
 
   <div class="checkout-box">
-    <h2>Total: Ksh <span id="totalAmount">0</span></h2>
+    <h2 class="section-title">Your Cart Item(s)</h2>
+    <div id="cartItemsContainer"></div>
+
+    <h2 style="text-align: center;">
+  <span style="
+    background-color: #007BFF;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: bold;
+  ">
+    Total: Ksh <span id="totalAmount">0</span>
+  </span>
+</h2>
+
     <p>Please enter your M-PESA phone number to proceed with the payment.</p>
     
     <input type="text" id="phone" placeholder="Enter your M-PESA phone number" required />
-
     <button onclick="payWithPaystack()">Pay with M-PESA</button>
   </div>
 
-<script>
-  // Format for display
-const raw = localStorage.getItem("checkoutAmount") || "0";
-const formatted = Number(raw).toLocaleString('en-KE', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-});
-document.getElementById("totalAmount").textContent = formatted; // ✅ shows 62,650.00
+  <script>
+    // 1. Load and format the total
+    const raw = localStorage.getItem("checkoutAmount") || "0";
+    const formatted = Number(raw).toLocaleString('en-KE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    document.getElementById("totalAmount").textContent = formatted;
 
+    // 2. Display cart items as numbered list
+    const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const container = document.getElementById("cartItemsContainer");
 
-  function payWithPaystack() {
-    const phone = document.getElementById("phone").value.trim();
-    const amountKsh = parseFloat(localStorage.getItem("checkoutAmount") || "0");
+    if (cart.length === 0) {
+      container.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      const list = document.createElement("ol");
+      list.classList.add("cart-list");
 
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} - Ksh ${Number(item.price).toLocaleString('en-KE', { minimumFractionDigits: 2 })}`;
+        list.appendChild(li);
+      });
 
-    if (!phone || phone.length < 10 || !/^\d+$/.test(phone)) {
-      alert("Please enter a valid phone number.");
-      return;
+      container.appendChild(list);
     }
 
-    const handler = PaystackPop.setup({
-      key: 'pk_test_163014ec364903a72c78b8e3fea9db7e080333ce',
-      email: `${phone}@alpha-electricals.co.ke`,
-      amount: Math.round(amountKsh * 100), // ONLY multiply once here
-      currency: 'KES',
-      channels: ['card', 'mobile_money'],
-      ref: 'ALPHA-' + Math.floor(Math.random() * 1000000000),
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Phone Number",
-            variable_name: "phone_number",
-            value: phone
-          }
-        ]
-      },
-      callback: function(response) {
-        alert('Payment initiated! Ref: ' + response.reference);
-      },
-      onClose: function() {
-        alert('Transaction was canceled.');
+    // 3. Paystack Payment Function
+    function payWithPaystack() {
+      const phone = document.getElementById("phone").value.trim();
+      const amountKsh = parseFloat(localStorage.getItem("checkoutAmount") || "0");
+
+      if (!phone || phone.length < 10 || !/^\d+$/.test(phone)) {
+        alert("Please enter a valid phone number.");
+        return;
       }
-    });
 
-    handler.openIframe();
-  }
-</script>
+      const handler = PaystackPop.setup({
+        key: 'pk_test_163014ec364903a72c78b8e3fea9db7e080333ce',
+        email: `${phone}@alpha-electricals.co.ke`,
+        phone: phone,
+        amount: Math.round(amountKsh * 100),
+        currency: 'KES',
+        channels: ['card', 'mobile_money'],
+        ref: 'ALPHA-' + Math.floor(Math.random() * 1000000000),
+        metadata: {
+          custom_fields: [
+            {
+              display_name: "Phone Number",
+              variable_name: "phone_number",
+              value: phone
+            }
+          ]
+        },
+        callback: function(response) {
+          alert('Payment initiated! Ref: ' + response.reference);
+        },
+        onClose: function() {
+          alert('Transaction was canceled.');
+        }
+      });
 
-
+      handler.openIframe();
+    }
+  </script>
 </body>
 </html>
