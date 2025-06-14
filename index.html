@@ -139,16 +139,16 @@ position: relative;
      </div>
      <div id="cart-items" class="cart-items"></div>
      <div class="cart-footer">
-      <strong>Total Amount: Ksh <span id="cart-total">0</span></strong>
+      <div><strong>Total Amount: Ksh <span id="cart-total">0</span></strong></div>
+      <div> <button id="clearCartButton" style="width: 100%; background-color: red; color: white; padding: 10px; margin-bottom: 10px; border: none; border-radius: 5px;">Clear Cart</button></div>
      </div>
+
      <div style="background-color: rgb(8, 17, 139); width: 100%; padding: 10px;">
       <button id="proceedToCheckout" style="width: 100%; padding: 12px; font-size: 16px; color: white; background-color: #049b31; border: none; border-radius: 5px;">
       Proceed to Checkout
       </button>
      </div>
 
-     <div class="cart-empty" id="cart-empty" style="display: none;">
-       <p>Your cart is empty.</p>
      </div>
     </div>
   </header>
@@ -689,10 +689,39 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("checkoutAmount", cleanAmount);
     window.location.href = "checkout.html"; // OR show iframe if using modal
   });
+  localStorage.setItem("cartItems", JSON.stringify(cart));
+  localStorage.setItem("checkoutAmount", cleanAmount);
+
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const clearCartBtn = document.getElementById('clearCartButton');
+  if (clearCartBtn) {
+    clearCartBtn.addEventListener('click', function () {
+      // Clear the cart and item counter
+      localStorage.removeItem('cart');         // Remove all cart items
+      localStorage.removeItem('cartItemId');   // Reset the item ID counter
+
+      // Reset cart display
+      document.getElementById('cart-count').textContent = '0';
+      document.getElementById('cart-total').textContent = '0';
+      const cartItemsContainer = document.getElementById('cart-items');
+      if (cartItemsContainer) {
+        cartItemsContainer.innerHTML = '';     // Empty the cart items list
+      }
+
+      // Optionally show empty cart message
+      const emptyMsg = document.getElementById('cart-empty');
+      if (emptyMsg) {
+        emptyMsg.style.display = 'block';
+      }
+    });
+  }
+});
 
 
+</script>
 
 <script src="script.js" defer></script>
 </body>
